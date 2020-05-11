@@ -6,6 +6,13 @@
     name: docker
     state: present
 
+- name: install docker-compose
+  become: yes
+  become_user: root
+  pacman:
+    name: docker-compose
+    state: present
+
 - name: add user to docker group
   become: yes
   become_user: root
