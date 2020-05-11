@@ -60,3 +60,8 @@
     regexp: '(?=.*root)(?!.*cgroup_enable=memory)(.+)'
     backrefs: yes
     line: '\1 cgroup_enable=memory'
+
+- hosts: all
+  any_errors_fatal: true
+  roles:
+    - reboot 
