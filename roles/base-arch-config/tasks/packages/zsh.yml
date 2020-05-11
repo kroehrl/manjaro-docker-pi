@@ -1,0 +1,29 @@
+- name: install ZSH
+  become: yes
+  become_user: root
+  pacman:
+    name: zsh
+    state: present
+
+- name: install antigen
+  become: yes
+  become_user: aur_builder
+  aur:
+    name: antigen-git
+
+- name: copy .zshrc
+  template:
+    src: zshrc.j2
+    dest: /home/{{ ansible_ssh_user }}/.zshrc
+
+- name: copy .antigenrc
+  template:
+    src: antigenrc.j2
+    dest: /home/{{ ansible_ssh_user }}/.antigenrc
+
+- name: set ZSH as shell
+  become: yes
+  become_user: root
+  user:
+    name: "{{ ansible_ssh_user }}"
+    shell: /bin/zsh

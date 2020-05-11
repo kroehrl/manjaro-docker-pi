@@ -1,0 +1,15 @@
+---
+- name: install cups
+  become: yes
+  become_user: root
+  pacman:
+    name: cups
+    state: present
+
+- name: enable cups
+  become: yes
+  become_user: root
+  service:
+    name: org.cups.cupsd.service
+    enabled: yes 
+    state: started
