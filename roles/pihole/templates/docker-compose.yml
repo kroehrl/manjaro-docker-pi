@@ -34,6 +34,7 @@ services:
         ipv4_address: 10.0.0.3
 
   unbound:
+    container_name: unbound
     image: klutchell/unbound
     ports:
       - '5053:5053/udp'
