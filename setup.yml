@@ -8,3 +8,12 @@
   any_errors_fatal: true
   roles:
     - reboot 
+
+- hosts: all
+  any_errors_fatal: true
+  roles:
+    - pihole
+  vars_prompt:
+    - name: "webpassword"
+      prompt: "Define your pihole webpassword (for Login)"
+      private: yes

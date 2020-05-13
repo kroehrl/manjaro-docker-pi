@@ -1,0 +1,54 @@
+version: "3"
+
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    privileged: true # Workaround, otherwise pihole won't start
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+    environment:
+      TZ: 'Europe/Berlin'
+      WEBPASSWORD: {{ webpassword }}
+      DNS1: '10.0.0.2#5053'
+      DNS2: '10.0.0.2#5053'
+    # Volumes store your data between container upgrades
+    volumes:
+       - './etc-pihole/:/etc/pihole/'
+       - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    dns: 127.0.0.1
+    # Recommended but not required (DHCP needs NET_ADMIN)
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    links:
+      - unbound
+    networks:
+      pihole_net:
+        ipv4_address: 10.0.0.3
+
+  unbound:
+    image: klutchell/unbound
+    ports:
+      - '5053:5053/udp'
+      - '5053:5053/tcp'
+    volumes:
+      - {{ unbound_config_dir }}:/opt/unbound/etc/unbound
+      - {{ unbound_root_hints }}:/var/lib/unbound
+    restart: unless-stopped
+    networks:
+      pihole_net:
+        ipv4_address: 10.0.0.2
+
+networks:
+  pihole_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/29

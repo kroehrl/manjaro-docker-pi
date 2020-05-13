@@ -26,6 +26,7 @@
 - include: packages/socat.yml
 - include: packages/ebtables.yml
 - include: packages/docker.yml
+- include: packages/wget.yml
 #- include: packages/lvm.yml
 #- include: packages/systemd-resolved.yml
 #- include: packages/conntrack-tools.yml

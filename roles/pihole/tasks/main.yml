@@ -1,0 +1,52 @@
+---
+- name: Create {{ pihole_compose_dir }} if it does not exist
+  file:
+    path: "{{ pihole_compose_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create {{ unbound_config_dir }} if it does not exist
+  file:
+    path: "{{ unbound_config_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create {{ unbound_root_hints }} if it does not exist
+  file:
+    path: "{{ unbound_root_hints }}"
+    state: directory
+    mode: '0755'
+
+- name: copy updateroot.sh
+  template:
+    src: updateroot.sh
+    dest: "{{ pihole_compose_dir }}/updateroot.sh"
+    mode: a+x
+
+- name: Add cronjob for updateroot.sh
+  cron:
+    name: "unbound root hints updater"
+    minute: "0"
+    hour: "1"
+    day: "1"
+    job: "{{ pihole_compose_dir }}/updateroot.sh &"
+
+- name: copy unbound.conf
+  copy:
+    src: unbound.conf
+    dest: "{{ unbound_config_dir }}/unbound.conf"
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ pihole_compose_dir }}/docker-compose.yml"
+
+- name: start pihole
+  shell: docker-compose up --build -d
+  args:
+    chdir: "{{ pihole_compose_dir }}"
+
+- name: run updateroot.sh to get the initial root hints
+  shell: ./updateroot.sh
+  args:
+    chdir: "{{ pihole_compose_dir }}"

@@ -1,0 +1,3 @@
+pihole_compose_dir: "{{ docker_compose_dir }}/pihole"
+unbound_config_dir: "{{ pihole_compose_dir }}/unbound"
+unbound_root_hints: "{{ pihole_compose_dir }}/root_hints"
