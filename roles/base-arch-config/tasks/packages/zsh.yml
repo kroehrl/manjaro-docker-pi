@@ -5,6 +5,13 @@
     name: zsh
     state: present
 
+- name: install base-devel
+  become: yes
+  become_user: root
+  pacman:
+      name: base-devel
+      state: present
+
 - name: install antigen
   become: yes
   become_user: aur_builder
