@@ -1,0 +1,16 @@
+---
+- name: Create {{ nextcloudpi_compose_dir }} if it does not exist
+  file:
+    path: "{{ nextcloudpi_compose_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ nextcloudpi_compose_dir }}/docker-compose.yml"
+
+- name: start nextcloudpi
+  shell: docker-compose up --build -d
+  args:
+    chdir: "{{ nextcloudpi_compose_dir }}"

@@ -17,3 +17,8 @@
     - name: "webpassword"
       prompt: "Define your pihole webpassword (for Login)"
       private: yes
+
+- hosts: all
+  any_errors_fatal: true
+  roles:
+    - nextcloudpi
