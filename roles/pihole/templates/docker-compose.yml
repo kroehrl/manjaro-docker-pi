@@ -3,13 +3,15 @@ version: "3"
 # More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
 services:
   pihole:
-    privileged: true # Workaround, otherwise pihole won't start
     container_name: pihole
+    # Workaround, otherwise pihole won't start
+    privileged: true
     image: pihole/pihole:latest
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
+      # Fix to resolve DNS in other containers: https://discourse.pi-hole.net/t/solve-dns-resolution-in-other-containers-when-using-docker-pihole/31413
+      - "{{ ansible_default_ipv4.address }}:53:53/tcp"
+      - "{{ ansible_default_ipv4.address }}:53:53/udp"
+      - "{{ ansible_default_ipv4.address }}:67:67/udp"
       - "8080:80/tcp"
       - "8443:443/tcp"
     environment:
