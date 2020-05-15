@@ -17,8 +17,15 @@
     - name: "webpassword"
       prompt: "Define your pihole webpassword (for Login)"
       private: yes
+      confirm: yes
 
 - hosts: all
   any_errors_fatal: true
   roles:
     - nextcloudpi
+  vars_prompt:
+    - name: "nextcloudpi_usb_stick"
+      prompt: "Path to the USB Stick"
+      default: "/dev/sda1"
+      private: no
+      confirm: yes

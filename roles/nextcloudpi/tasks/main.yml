@@ -5,6 +5,23 @@
     state: directory
     mode: '0755'
 
+- name: Create {{ nextcloudpi_usb_mount_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ nextcloudpi_usb_mount_dir }}"
+    state: directory
+
+- name: Mount {{ nextcloudpi_usb_stick }} to {{ nextcloudpi_usb_mount_dir }}
+  become: yes
+  become_user: root
+  mount:
+    path: "{{ nextcloudpi_usb_mount_dir }}"
+    src: "{{ nextcloudpi_usb_stick }}"
+    fstype: ext4
+    opts: auto,nofail,async,noatime,users,rw
+    state: mounted
+
 - name: copy docker-compose.yml
   template:
     src: docker-compose.yml

@@ -4,11 +4,11 @@ services:
   nextcloudpi:
     container_name: nextcloudpi
     image: ownyourbits/nextcloudpi:latest
-    command: "192.168.178.20"
+    command: "{{ ansible_default_ipv4.address }}"
     ports:
       - "443:443"
       - "4443:4443"
       - "80:80"
     volumes:
-       - './ncdata/:/data'
+       - '{{ nextcloudpi_usb_mount_dir }}/:/data'
     restart: unless-stopped
