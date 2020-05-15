@@ -28,7 +28,7 @@ services:
     #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
     cap_add:
       - NET_ADMIN
-    restart: unless-stopped
+    restart: always
     links:
       - unbound
     networks:
@@ -44,7 +44,7 @@ services:
     volumes:
       - {{ unbound_config_dir }}:/opt/unbound/etc/unbound
       - {{ unbound_root_hints }}:/var/lib/unbound
-    restart: unless-stopped
+    restart: always
     networks:
       pihole_net:
         ipv4_address: 10.0.0.2
