@@ -10,5 +10,5 @@ services:
       - "4443:4443"
       - "80:80"
     volumes:
-       - '{{ nextcloudpi_usb_mount_dir }}/:/data'
+       - '{{ nextcloudpi_usb_mount_dir }}/data/:/data'
     restart: unless-stopped

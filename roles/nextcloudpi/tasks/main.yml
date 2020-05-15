@@ -19,7 +19,7 @@
     path: "{{ nextcloudpi_usb_mount_dir }}"
     src: "{{ nextcloudpi_usb_stick }}"
     fstype: ext4
-    opts: auto,nofail,async,noatime,users,rw
+    opts: defaults,auto,nofail,exec,noatime
     state: mounted
 
 - name: copy docker-compose.yml
