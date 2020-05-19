@@ -28,4 +28,15 @@
       prompt: "Path to the USB Stick"
       default: "/dev/sda1"
       private: no
+    - name: "remote_location"
+      prompt: "Remote Location (Samba location)"
+      default: "//Datengrab/backup/Nextcloud"
+      private: no
+    - name: "remote_location_user"
+      prompt: "Remote User (needed to access Backups)"
+      default: "backup"
+      private: no
+    - name: "remote_location_user_password"
+      prompt: "Remote User Password"
+      private: yes
       confirm: yes
