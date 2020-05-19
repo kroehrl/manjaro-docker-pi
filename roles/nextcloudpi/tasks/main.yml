@@ -22,16 +22,6 @@
     opts: defaults,auto,nofail,exec,noatime
     state: mounted
 
-- name: copy docker-compose.yml
-  template:
-    src: docker-compose.yml
-    dest: "{{ nextcloudpi_compose_dir }}/docker-compose.yml"
-
-- name: start nextcloudpi
-  shell: docker-compose up --build -d
-  args:
-    chdir: "{{ nextcloudpi_compose_dir }}"
-
 - name: install autofs
   become: yes
   become_user: root
@@ -61,7 +51,6 @@
     content: |
       nextcloud -fstype=cifs,username={{ remote_location_user }},password={{ remote_location_user_password }},file_mode=0644,dir_mode=0755 :{{ remote_location }}
 
-
 - name: add auto.backup to auto.master
   become: yes
   become_user: root
@@ -76,3 +65,13 @@
     name: autofs
     enabled: yes
     state: started
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ nextcloudpi_compose_dir }}/docker-compose.yml"
+
+- name: start nextcloudpi
+  shell: docker-compose up --build -d
+  args:
+    chdir: "{{ nextcloudpi_compose_dir }}"
