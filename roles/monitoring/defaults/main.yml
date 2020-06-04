@@ -1,0 +1,3 @@
+monitoring_compose_dir: "{{ docker_compose_dir }}/monitoring"
+prometheus_config_dir: "{{ monitoring_compose_dir }}/prometheus"
+alertmanager_config_dir: "{{ monitoring_compose_dir }}/alertmanager"

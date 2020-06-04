@@ -40,3 +40,17 @@
       prompt: "Remote User Password"
       private: yes
       confirm: yes
+
+- hosts: all
+  any_errors_fatal: true
+  roles:
+    - monitoring
+  vars_prompt:
+    - name: "grafana_admin_user"
+      prompt: "Grafana Admin User"
+      default: "white"
+      private: no
+    - name: "grafana_admin_password"
+      prompt: "Grafana Admin Password"
+      private: yes
+      confirm: yes

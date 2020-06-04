@@ -1,0 +1,34 @@
+---
+# Monitoring is based on: 
+# https://github.com/vegasbrianc/prometheus
+
+- name: Create {{ monitoring_compose_dir }} if it does not exist
+  file:
+    path: "{{ monitoring_compose_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: copy prometheus folder
+  copy:
+    src: prometheus
+    dest: "{{ monitoring_compose_dir }}"
+
+- name: copy alertmanager folder
+  copy:
+    src: alertmanager
+    dest: "{{ monitoring_compose_dir }}"
+
+- name: copy grafana folder
+  copy:
+    src: grafana
+    dest: "{{ monitoring_compose_dir }}"
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ monitoring_compose_dir }}/docker-compose.yml"
+
+- name: start monitoring stack
+  shell: docker-compose up --build -d
+  args:
+    chdir: "{{ monitoring_compose_dir }}"
