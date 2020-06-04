@@ -16,7 +16,7 @@ services:
       - "8443:443/tcp"
     environment:
       TZ: 'Europe/Berlin'
-      WEBPASSWORD: {{ webpassword }}
+      WEBPASSWORD: '{{ webpassword }}'
       DNS1: '10.0.0.2#5053'
       DNS2: '10.0.0.2#5053'
     # Volumes store your data between container upgrades
