@@ -1,19 +1,17 @@
 groups:
-- name: example
+- name: prometheus
   rules:
-
-  # Alert for any instance that is unreachable for >2 minutes.
-  - alert: service_down
+  - alert: PrometheusTargetMissing
     expr: up == 0
-    for: 2m
+    for: 5m
     labels:
-      severity: page
+      severity: critical
     annotations:
-      summary: "Instance {{ $labels.instance }} down"
-      description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2 minutes."
+      summary: "Prometheus target missing (instance {{ $labels.instance }})"
+      description: "A Prometheus target has disappeared. An exporter might be crashed.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: high_load
-    expr: node_load1 > 0.5
+    expr: node_load1 > 0.01
     for: 2m
     labels:
       severity: page

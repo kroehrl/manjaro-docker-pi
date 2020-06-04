@@ -1,0 +1,9 @@
+{{ define "telegram.default" }}
+{{ range .Alerts }}
+{{ if eq .Status "firing"}}🔥 <b>{{ .Status | toUpper }}</b> 🔥{{else if eq .Status "resolved" }}💦 <b>{{ .Status | toUpper }}</b> 💦{{ else }}<b>{{ .Status | toUpper }}</b>{{ end }}
+<b>{{ .Annotations.summary }}</b>
+{{ .Annotations.description }}
+<b>Duration:</b> {{ duration .StartsAt .EndsAt }}{{ if ne .Status "firing"}}
+<b>Ended:</b> {{ .EndsAt | since }}{{ end }}
+{{ end }}
+{{ end }}
