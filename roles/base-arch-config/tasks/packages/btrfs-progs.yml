@@ -1,0 +1,7 @@
+---
+- name: install btrfs-progs
+  become: yes
+  become_user: root
+  pacman:
+    name: btrfs-progs
+    state: present
