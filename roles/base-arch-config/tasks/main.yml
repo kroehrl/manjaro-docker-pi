@@ -22,7 +22,6 @@
 - include: packages/rsync.yml
 - include: packages/docker.yml
 - include: packages/wget.yml
-- include: packages/btrfs-progs.yml
 
 - name: enable colorful output in pacman.conf
   become: yes
