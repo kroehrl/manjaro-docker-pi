@@ -12,4 +12,4 @@ services:
     volumes:
        - '{{ nextcloudpi_data_dir }}/data/:/data'
        - '{{ nextcloudpi_backup_dir }}/nextcloud/:/backups'
-    restart: unless-stopped
+    restart: always
