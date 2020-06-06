@@ -1,62 +1,76 @@
 ---
-- hosts: all
-  any_errors_fatal: true
-  roles:
-    - base-arch-config
+# - hosts: all
+#   any_errors_fatal: true
+#   roles:
+#     - base-arch-config
+
+# - hosts: all
+#   any_errors_fatal: true
+#   roles:
+#     - mount-usb
+
+# - hosts: all
+#   any_errors_fatal: true
+#   roles:
+#     - reboot 
+
+# - hosts: all
+#   any_errors_fatal: true
+#   roles:
+#     - monitoring
+#   vars_prompt:
+#     - name: "grafana_admin_user"
+#       prompt: "Grafana Admin User"
+#       private: no
+#     - name: "grafana_admin_password"
+#       prompt: "Grafana Admin Password"
+#       private: yes
+#       confirm: yes
+#     - name: "telegram_bot_token"
+#       prompt: "Telegram Bot Token"
+#       private: no
+#     - name: "telegram_chat_id"
+#       prompt: "Telegram Chat Id"
+#       private: no
+
+# - hosts: all
+#   any_errors_fatal: true
+#   roles:
+#     - pihole
+#   vars_prompt:
+#     - name: "webpassword"
+#       prompt: "Define your pihole webpassword (for Login)"
+#       private: yes
+#       confirm: yes
+
+# - hosts: all
+#   any_errors_fatal: true
+#   roles:
+#     - nextcloudpi
+#   vars_prompt:
+#     - name: "remote_location"
+#       prompt: "Remote Location (Samba location)"
+#       default: "//Datengrab/backup/Nextcloud"
+#       private: no
+#     - name: "remote_location_user"
+#       prompt: "Remote User (needed to access Backups)"
+#       default: "backup"
+#       private: no
+#     - name: "remote_location_user_password"
+#       prompt: "Remote User Password"
+#       private: yes
+#       confirm: yes
 
 - hosts: all
   any_errors_fatal: true
   roles:
-    - mount-usb
-
-- hosts: all
-  any_errors_fatal: true
-  roles:
-    - reboot 
-
-- hosts: all
-  any_errors_fatal: true
-  roles:
-    - pihole
+    - samba
   vars_prompt:
-    - name: "webpassword"
-      prompt: "Define your pihole webpassword (for Login)"
+    - name: "samba_user"
+      prompt: "Samba User"
+      default: "scanner"
+      private: no
+    - name: "samba_user_password"
+      prompt: "Samba User Password"
       private: yes
       confirm: yes
-
-- hosts: all
-  any_errors_fatal: true
-  roles:
-    - nextcloudpi
-  vars_prompt:
-    - name: "remote_location"
-      prompt: "Remote Location (Samba location)"
-      default: "//Datengrab/backup/Nextcloud"
-      private: no
-    - name: "remote_location_user"
-      prompt: "Remote User (needed to access Backups)"
-      default: "backup"
-      private: no
-    - name: "remote_location_user_password"
-      prompt: "Remote User Password"
-      private: yes
-      confirm: yes
-
-- hosts: all
-  any_errors_fatal: true
-  roles:
-    - monitoring
-  vars_prompt:
-    - name: "grafana_admin_user"
-      prompt: "Grafana Admin User"
-      private: no
-    - name: "grafana_admin_password"
-      prompt: "Grafana Admin Password"
-      private: yes
-      confirm: yes
-    - name: "telegram_bot_token"
-      prompt: "Telegram Bot Token"
-      private: no
-    - name: "telegram_chat_id"
-      prompt: "Telegram Chat Id"
-      private: no

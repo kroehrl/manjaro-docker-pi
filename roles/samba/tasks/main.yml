@@ -1,0 +1,24 @@
+---
+- name: Create {{ samba_compose_dir }} if it does not exist
+  file:
+    path: "{{ samba_compose_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create {{ scan_data_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ scan_data_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ samba_compose_dir }}/docker-compose.yml"
+
+- name: start samba
+  shell: docker-compose up --build -d
+  args:
+    chdir: "{{ samba_compose_dir }}"
