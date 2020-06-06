@@ -18,6 +18,11 @@
     src: alertmanager
     dest: "{{ monitoring_compose_dir }}"
 
+- name: copy alertmanager-bot folder
+  copy:
+    src: alertmanager-bot
+    dest: "{{ monitoring_compose_dir }}"
+
 - name: copy grafana folder
   copy:
     src: grafana

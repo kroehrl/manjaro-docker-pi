@@ -4,6 +4,11 @@ volumes:
     prometheus_data: {}
     grafana_data: {}
 
+networks:
+  alerting:
+  prometheus:
+  grafana:
+
 services:
   prometheus:
     container_name: prometheus
@@ -23,6 +28,9 @@ services:
       - cadvisor
       - node-exporter
       - alertmanager
+    networks:
+      - prometheus
+      - grafana
     restart: always
 
   node-exporter:
@@ -38,19 +46,42 @@ services:
       - '--path.rootfs=/rootfs'
       - '--collector.filesystem.ignored-mount-points="^(/rootfs|/host|)/(sys|proc|dev|host|etc)($$|/)"'
       - '--collector.filesystem.ignored-fs-types="^(sys|proc|auto|cgroup|devpts|ns|au|fuse\.lxc|mqueue)(fs|)$$"'
+    networks:
+      - prometheus
     restart: always
 
   alertmanager:
     container_name: alertmanager
     image: prom/alertmanager
-    ports:
-      - 9093:9093
+    depends_on:
+      - alertmanager-bot
     volumes:
       - ./alertmanager/:/etc/alertmanager/
     restart: always
     command:
       - '--config.file=/etc/alertmanager/config.yml'
       - '--storage.path=/alertmanager'
+    networks:
+      - prometheus
+      - alerting
+    restart: always
+
+  alertmanager-bot:
+    container_name: alertmanager-bot
+    image: rascal/alertmanager-bot:v0.4.2
+    environment:
+      ALERTMANAGER_URL: http://alertmanager:9093
+      BOLT_PATH: /data/bot.db
+      STORE: bolt
+      TELEGRAM_ADMIN: '{{ telegram_chat_id }}'
+      TELEGRAM_TOKEN: '{{ telegram_bot_token }}'
+      TEMPLATE_PATHS: /templates/custom.tmpl
+    volumes:
+      - ./alertmanager-bot/templates:/templates/
+      - ./alertmanager-bot/data:/data
+    networks:
+      - alerting
+    restart: always
 
   cadvisor:
     container_name: cadvisor
@@ -60,6 +91,8 @@ services:
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - prometheus
     restart: always
 
   grafana:
@@ -68,6 +101,8 @@ services:
     user: "472"
     depends_on:
       - prometheus
+    networks:
+      - grafana
     ports:
       - 3000:3000
     volumes:

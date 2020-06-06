@@ -9,12 +9,89 @@ groups:
     annotations:
       summary: "Prometheus target missing (instance {{ $labels.instance }})"
       description: "A Prometheus target has disappeared. An exporter might be crashed.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
-
-  - alert: high_load
-    expr: node_load1 > 0.01
-    for: 2m
+  - alert: PrometheusConfigurationReloadFailure
+    expr: prometheus_config_last_reload_successful != 1
+    for: 5m
     labels:
-      severity: page
+      severity: warning
     annotations:
-      summary: "Instance {{ $labels.instance }} under high load"
-      description: "{{ $labels.instance }} of job {{ $labels.job }} is under high load."
+      summary: "Prometheus configuration reload failure (instance {{ $labels.instance }})"
+      description: "Prometheus configuration reload error\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+  - alert: PrometheusRuleEvaluationFailures
+    expr: increase(prometheus_rule_evaluation_failures_total[3m]) > 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Prometheus rule evaluation failures (instance {{ $labels.instance }})"
+      description: "Prometheus encountered {{ $value }} rule evaluation failures, leading to potentially ignored alerts.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+  - alert: PrometheusRuleEvaluationSlow
+    expr: prometheus_rule_group_last_duration_seconds > prometheus_rule_group_interval_seconds
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Prometheus rule evaluation slow (instance {{ $labels.instance }})"
+      description: "Prometheus rule evaluation took more time than the scheduled interval. I indicates a slower storage backend access or too complex query.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+- name: node-exporter
+  rules:
+  - alert: HostOutOfMemory
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host out of memory (instance {{ $labels.instance }})"
+      description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+  - alert: HostOutOfDiskSpace
+    expr: (node_filesystem_avail_bytes{fstype=~"vfat|ext4"}  * 100) / node_filesystem_size_bytes{fstype=~"vfat|ext4"} < 20
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host out of disk space (mountpoint={{ $labels.mountpoint }}) (instance {{ $labels.instance }})"
+      description: "Disk is almost full (< 20% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+  - alert: HostHighCpuLoad
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host high CPU load (instance {{ $labels.instance }})"
+      description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+  - alert: RpiTooHot_warning
+    expr: node_thermal_zone_temp > 65
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "RaspberryPi getting hot (instance {{ $labels.instance }})"
+      description: "RaspberryPi getting hot\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+  - alert: RpiTooHot_critical
+    expr: node_thermal_zone_temp > 75
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "RaspberryPi getting to hot! (instance {{ $labels.instance }})"
+      description: "RaspberryPi getting to hot\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+- name: cadvisor
+  rules:
+  - alert: ContainerKilled
+    expr: time() - container_last_seen > 60
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Container killed (instance {{ $labels.instance }})"
+      description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+  - alert: ContainerCpuUsage
+    expr: (sum(rate(container_cpu_usage_seconds_total{name!=""}[3m])) BY (instance, name) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Container CPU usage (instance {{ $labels.instance }})"
+      description: "Container CPU usage is above 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

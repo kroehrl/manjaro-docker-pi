@@ -48,9 +48,14 @@
   vars_prompt:
     - name: "grafana_admin_user"
       prompt: "Grafana Admin User"
-      default: "white"
       private: no
     - name: "grafana_admin_password"
       prompt: "Grafana Admin Password"
       private: yes
       confirm: yes
+    - name: "telegram_bot_token"
+      prompt: "Telegram Bot Token"
+      private: no
+    - name: "telegram_chat_id"
+      prompt: "Telegram Chat Id"
+      private: no
