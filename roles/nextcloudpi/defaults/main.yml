@@ -1,3 +1,3 @@
 nextcloudpi_compose_dir: "{{ docker_compose_dir }}/nextcloudpi"
-nextcloudpi_usb_mount_dir: "/media/nextcloud"
+nextcloudpi_data_dir: "{{ usb_mount_dir }}/nextcloud"
 nextcloudpi_backup_dir: "/media/backup"

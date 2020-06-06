@@ -7,6 +7,11 @@
 - hosts: all
   any_errors_fatal: true
   roles:
+    - mount-usb
+
+- hosts: all
+  any_errors_fatal: true
+  roles:
     - reboot 
 
 - hosts: all
@@ -24,10 +29,6 @@
   roles:
     - nextcloudpi
   vars_prompt:
-    - name: "nextcloudpi_usb_stick"
-      prompt: "Path to the USB Stick"
-      default: "/dev/sda1"
-      private: no
     - name: "remote_location"
       prompt: "Remote Location (Samba location)"
       default: "//Datengrab/backup/Nextcloud"
