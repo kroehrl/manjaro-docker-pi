@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  jdownloader:
+    container_name: jdownloader
+    image: jaymoulin/jdownloader:latest
+    restart: always
+    user: {{ download_dir.stat.uid }}:{{ download_dir.stat.gid }}
+    volumes:
+      - {{ jdownloader_config_dir }}:/opt/JDownloader/cfg
+      - {{ jdownloader_download_dir }}:/opt/JDownloader/Downloads:z
+      - /etc/localtime:/etc/localtime:ro
+    environment: 
+      MYJD_USER: '{{ jdownloader_user }}'
+      MYJD_PASSWORD: '{{ jdownloader_user_password }}'
+      MYJD_DEVICE_NAME: Insomnia
+    ports:
+      - 3129:3129

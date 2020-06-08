@@ -1,0 +1,50 @@
+---
+- name: Create {{ jdownloader_compose_dir }} if it does not exist
+  file:
+    path: "{{ jdownloader_compose_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create {{ jdownloader_config_dir }} if it does not exist
+  file:
+    path: "{{ jdownloader_config_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create {{ jdownloader_logs_dir }} if it does not exist
+  file:
+    path: "{{ jdownloader_logs_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Check if {{ jdownloader_download_dir }} exists (maybe by samba role)
+  stat:
+    path: "{{ jdownloader_download_dir }}"
+  register: download_dir
+
+- name: Create {{ jdownloader_download_dir }} if it does not exist # will use the samba directory!
+  become: yes
+  become_user: root
+  file:
+    path: "{{ jdownloader_download_dir }}"
+    state: directory
+    mode: '0755'
+  when: not download_dir.stat.exists
+
+- name: Get folder permissions for {{ jdownloader_download_dir }}
+  stat:
+    path: "{{ jdownloader_download_dir }}"
+  register: download_dir
+
+- debug:
+    msg: "UserID: {{ download_dir.stat.uid }} - GroupID: {{ download_dir.stat.gid }}"
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ jdownloader_compose_dir }}/docker-compose.yml"
+
+- name: start jdownloader
+  shell: docker-compose up --build -d
+  args:
+    chdir: "{{ jdownloader_compose_dir }}"

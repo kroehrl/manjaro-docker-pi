@@ -1,0 +1,30 @@
+---
+- name: Create {{ pyload_compose_dir }} if it does not exist
+  file:
+    path: "{{ pyload_compose_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create {{ pyload_config_dir }} if it does not exist
+  file:
+    path: "{{ pyload_config_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create {{ pyload_download_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ pyload_download_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ pyload_compose_dir }}/docker-compose.yml"
+
+- name: start pyload
+  shell: docker-compose up --build -d
+  args:
+    chdir: "{{ pyload_compose_dir }}"

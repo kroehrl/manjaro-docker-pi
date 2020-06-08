@@ -68,9 +68,27 @@
   vars_prompt:
     - name: "samba_user"
       prompt: "Samba User"
-      default: "scanner"
+      default: "samba"
       private: no
     - name: "samba_user_password"
       prompt: "Samba User Password"
       private: yes
       confirm: yes
+
+- hosts: all
+  any_errors_fatal: true
+  roles:
+    - jdownloader
+  vars_prompt:
+    - name: "jdownloader_user"
+      prompt: "MyJdownloader User"
+      private: no
+    - name: "jdownloader_user_password"
+      prompt: "MyJdownloader User Password"
+      private: yes
+      confirm: yes
+
+# - hosts: all
+#   any_errors_fatal: true
+#   roles:
+#     - pyload

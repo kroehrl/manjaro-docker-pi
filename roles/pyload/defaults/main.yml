@@ -1,0 +1,3 @@
+pyload_compose_dir: "{{ docker_compose_dir }}/pyload"
+pyload_config_dir: "{{ pyload_compose_dir }}/config"
+pyload_download_dir: "{{ usb_mount_dir }}/downloads"

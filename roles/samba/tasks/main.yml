@@ -5,11 +5,19 @@
     state: directory
     mode: '0755'
 
-- name: Create {{ scan_data_dir }} if it does not exist
+- name: Create {{ scan_data_dir }} if it does not exist # Permissions will be overwritten by samba (-p flag)
   become: yes
   become_user: root
   file:
     path: "{{ scan_data_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create {{ download_data_dir }} if it does not exist # Permissions will be overwritten by samba (-p flag)
+  become: yes
+  become_user: root
+  file:
+    path: "{{ download_data_dir }}"
     state: directory
     mode: '0755'
 

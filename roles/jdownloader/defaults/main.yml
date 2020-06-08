@@ -1,0 +1,4 @@
+jdownloader_compose_dir: "{{ docker_compose_dir }}/jdownloader"
+jdownloader_config_dir: "{{ jdownloader_compose_dir }}/config"
+jdownloader_logs_dir: "{{ jdownloader_compose_dir }}/logs"
+jdownloader_download_dir: "{{ usb_mount_dir }}/downloads"

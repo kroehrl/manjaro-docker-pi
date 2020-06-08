@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  pyload:
+    image: linuxserver/pyload:latest
+    container_name: pyload
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: 'Europe/Berlin'
+    volumes:
+      - {{ pyload_config_dir }}:/config
+      - {{ pyload_download_dir }}:/downloads
+    ports:
+      - 8000:8000
+      - 7227:7227 #optional
+    restart: always

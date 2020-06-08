@@ -18,4 +18,5 @@ services:
     tty: true
     volumes:
       - {{ scan_data_dir }}:{{ scan_data_dir }}:z
-    command: '-s "scans;{{ scan_data_dir }};yes;no;no;{{ samba_user }}" -u "{{ samba_user }};{{ samba_user_password }}" -p -g "server min protocol = NT1"' # HP Scanner needs SMB1 (== NT1)
+      - {{ download_data_dir }}:{{ download_data_dir }}:z
+    command: '-s "scans;{{ scan_data_dir }};yes;no;no;{{ samba_user }}" -s "downloads;{{ download_data_dir }};yes;no;no;{{ samba_user }}" -u "{{ samba_user }};{{ samba_user_password }}" -p -g "server min protocol = NT1"' # HP Scanner needs SMB1 (== NT1)
