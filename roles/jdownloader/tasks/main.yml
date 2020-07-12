@@ -6,15 +6,23 @@
     mode: '0755'
 
 - name: Create {{ jdownloader_config_dir }} if it does not exist
+  become: yes
+  become_user: root
   file:
     path: "{{ jdownloader_config_dir }}"
     state: directory
+    owner: '100' # Comes from the samba share
+    group: '101'
     mode: '0755'
 
 - name: Create {{ jdownloader_logs_dir }} if it does not exist
+  become: yes
+  become_user: root
   file:
     path: "{{ jdownloader_logs_dir }}"
     state: directory
+    owner: '100' # Comes from the samba share
+    group: '101'
     mode: '0755'
 
 - name: Check if {{ jdownloader_download_dir }} exists (maybe by samba role)
@@ -35,9 +43,6 @@
   stat:
     path: "{{ jdownloader_download_dir }}"
   register: download_dir
-
-- debug:
-    msg: "UserID: {{ download_dir.stat.uid }} - GroupID: {{ download_dir.stat.gid }}"
 
 - name: copy docker-compose.yml
   template:

@@ -8,11 +8,13 @@ services:
     user: {{ download_dir.stat.uid }}:{{ download_dir.stat.gid }}
     volumes:
       - {{ jdownloader_config_dir }}:/opt/JDownloader/cfg
-      - {{ jdownloader_download_dir }}:/opt/JDownloader/Downloads:z
+      - {{ jdownloader_logs_dir }}:/opt/JDownloader/logs
+      - {{ jdownloader_download_dir }}:/Downloads:z
       - /etc/localtime:/etc/localtime:ro
     environment: 
       MYJD_USER: '{{ jdownloader_user }}'
       MYJD_PASSWORD: '{{ jdownloader_user_password }}'
       MYJD_DEVICE_NAME: Insomnia
+      XDG_DOWNLOAD_DIR: /Downloads
     ports:
       - 3129:3129
