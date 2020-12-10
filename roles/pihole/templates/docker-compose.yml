@@ -19,15 +19,16 @@ services:
       WEBPASSWORD: '{{ webpassword }}'
       DNS1: '10.0.0.2#5053'
       DNS2: '10.0.0.2#5053'
+      DNSSEC: 'true'
+      DNS_BOGUS_PRIV: 'true'
+      CONDITIONAL_FORWARDING: 'true'
+      CONDITIONAL_FORWARDING_DOMAIN: '{{ conditional_forwarding_domain }}'
+      CONDITIONAL_FORWARDING_IP: '{{ conditional_forwarding_ip }}'
     # Volumes store your data between container upgrades
     volumes:
        - './etc-pihole/:/etc/pihole/'
        - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
     dns: 127.0.0.1
-    # Recommended but not required (DHCP needs NET_ADMIN)
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    cap_add:
-      - NET_ADMIN
     restart: always
     links:
       - unbound

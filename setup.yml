@@ -42,6 +42,14 @@
       prompt: "Define your pihole webpassword (for Login)"
       private: yes
       confirm: yes
+    - name: "conditional_forwarding_ip"
+      prompt: "Set the IP of the local network router"
+      default: "192.168.178.1"
+      private: no
+    - name: "conditional_forwarding_domain"
+      prompt: "Set the reverse DNS of the local network router"
+      default: "fritz.box"
+      private: no
 
 - hosts: all
   any_errors_fatal: true
