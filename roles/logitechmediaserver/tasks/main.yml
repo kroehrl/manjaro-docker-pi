@@ -1,0 +1,74 @@
+---
+- name: Create {{ logitechmediaserver_compose_dir }} if it does not exist
+  file:
+    path: "{{ logitechmediaserver_compose_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create {{ logitechmediaserver_config_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ logitechmediaserver_config_dir }}"
+    state: directory
+
+- name: Create {{ logitechmediaserver_playlist_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ logitechmediaserver_playlist_dir }}"
+    state: directory
+
+- name: install autofs
+  become: yes
+  become_user: root
+  pacman:
+    name: autofs
+    state: present
+
+- name: install cifs-utils
+  become: yes
+  become_user: root
+  pacman:
+    name: cifs-utils
+    state: present
+
+- name: create {{ logitechmediaserver_music_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ logitechmediaserver_music_dir }}"
+    state: directory
+
+- name: create auto.music
+  become: yes
+  become_user: root
+  copy:
+    dest: "/etc/autofs/auto.music"
+    content: |
+      music -fstype=cifs,username={{ music_remote_location_user }},password={{ music_remote_location_user_password }} :{{ music_remote_location }}
+
+- name: add auto.music to auto.master
+  become: yes
+  become_user: root
+  lineinfile:
+    line: "{{ logitechmediaserver_music_dir }} /etc/autofs/auto.music --timeout 60 --browse"
+    dest: "/etc/autofs/auto.master"
+
+- name: enable autofs
+  become: yes
+  become_user: root
+  service:
+    name: autofs
+    enabled: yes
+    state: restarted
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ logitechmediaserver_compose_dir }}/docker-compose.yml"
+
+- name: start logitechmediaserver
+  shell: docker-compose up --build -d
+  args:
+    chdir: "{{ logitechmediaserver_compose_dir }}"

@@ -1,0 +1,4 @@
+logitechmediaserver_compose_dir: "{{ docker_compose_dir }}/logitechmediaserver"
+logitechmediaserver_music_dir: "/media/music"
+logitechmediaserver_playlist_dir: "{{ usb_mount_dir }}/logitechmediaserver/playlist"
+logitechmediaserver_config_dir: "{{ usb_mount_dir }}/logitechmediaserver/config"

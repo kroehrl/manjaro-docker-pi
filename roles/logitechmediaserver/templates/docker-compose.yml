@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  logitechmediaserver:
+    container_name: logitechmediaserver
+    image: lmscommunity/logitechmediaserver:stable
+    environment:
+      TZ: 'Europe/Berlin'
+    volumes:
+      - '{{ logitechmediaserver_config_dir }}:/config:rw'
+      - '{{ logitechmediaserver_music_dir }}/music:/music:ro'
+      - '{{ logitechmediaserver_playlist_dir }}:/playlist:ro'
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 9000:9000/tcp
+      - 9090:9090/tcp
+      - 3483:3483/tcp
+      - 3483:3483/udp
+    restart: always

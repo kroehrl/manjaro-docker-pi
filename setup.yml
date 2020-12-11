@@ -56,15 +56,15 @@
   roles:
     - nextcloudpi
   vars_prompt:
-    - name: "remote_location"
+    - name: "backup_remote_location"
       prompt: "Remote Location (Samba location)"
       default: "//Datengrab/backup/Nextcloud"
       private: no
-    - name: "remote_location_user"
+    - name: "backup_remote_location_user"
       prompt: "Remote User (needed to access Backups)"
       default: "backup"
       private: no
-    - name: "remote_location_user_password"
+    - name: "backup_remote_location_user_password"
       prompt: "Remote User Password"
       private: yes
       confirm: yes
@@ -93,6 +93,24 @@
       private: no
     - name: "jdownloader_user_password"
       prompt: "MyJdownloader User Password"
+      private: yes
+      confirm: yes
+
+- hosts: all
+  any_errors_fatal: true
+  roles:
+    - logitechmediaserver
+  vars_prompt:
+    - name: "music_remote_location"
+      prompt: "Remote Location (Samba location)"
+      default: "//Datengrab/Daten/Musik/sortiert"
+      private: no
+    - name: "music_remote_location_user"
+      prompt: "Remote User (needed to access Backups)"
+      default: "media"
+      private: no
+    - name: "music_remote_location_user_password"
+      prompt: "Remote User Password"
       private: yes
       confirm: yes
 
