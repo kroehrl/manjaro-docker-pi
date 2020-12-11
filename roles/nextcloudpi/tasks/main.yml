@@ -39,7 +39,7 @@
   copy:
     dest: "/etc/autofs/auto.backup"
     content: |
-      nextcloud -fstype=cifs,username={{ remote_location_user }},password={{ remote_location_user_password }},file_mode=0644,dir_mode=0755 :{{ remote_location }}
+      nextcloud -fstype=cifs,username={{ backup_remote_location_user }},password={{ backup_remote_location_user_password }},file_mode=0644,dir_mode=0755 :{{ backup_remote_location }}
 
 - name: add auto.backup to auto.master
   become: yes
