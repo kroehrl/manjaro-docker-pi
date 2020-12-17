@@ -1,0 +1,7 @@
+nextcloud_compose_dir: "{{ docker_compose_dir }}/nextcloud"
+nextcloud_data_dir: "{{ usb_mount_dir }}/nextcloud/data"
+nextcloud_config_dir: "{{ usb_mount_dir }}/nextcloud/config"
+nextcloud_backup_dir: "/media/backup"
+nextcloud_webserver_user: "abc" #Linuxserver.io Nextcloud Image uses the abc user instead of www-data user.
+mariadb_config_dir: "{{ usb_mount_dir }}/mariadb/config"
+traefik_config_dir: "{{ usb_mount_dir }}/traefik"

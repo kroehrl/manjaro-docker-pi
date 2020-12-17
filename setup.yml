@@ -51,11 +51,46 @@
       default: "fritz.box"
       private: no
 
+# - hosts: all
+#   any_errors_fatal: true
+#   roles:
+#     - nextcloudpi
+#   vars_prompt:
+#     - name: "backup_remote_location"
+#       prompt: "Remote Location (Samba location)"
+#       default: "//Datengrab/backup/Nextcloud"
+#       private: no
+#     - name: "backup_remote_location_user"
+#       prompt: "Remote User (needed to access Backups)"
+#       default: "backup"
+#       private: no
+#     - name: "backup_remote_location_user_password"
+#       prompt: "Remote User Password"
+#       private: yes
+#       confirm: yes
+
 - hosts: all
   any_errors_fatal: true
   roles:
-    - nextcloudpi
+    - nextcloud
   vars_prompt:
+    - name: "duckdns_subdomain"
+      prompt: "Duckdns Sub Domain (like 'nextcloud')"
+      private: no
+    - name: "duckdns_token"
+      prompt: "Duckdns Token"
+      private: no
+    - name: "mysql_password"
+      prompt: "Set the MYSQL_PASSWORD"
+      private: yes
+      confirm: yes
+    - name: "mysql_root_password"
+      prompt: "Set the MYSQL_ROOT_PASSWORD"
+      private: yes
+      confirm: yes
+    - name: "traefik_challenge_email"
+      prompt: "Set the certificate challenge E-Mail"
+      private: no
     - name: "backup_remote_location"
       prompt: "Remote Location (Samba location)"
       default: "//Datengrab/backup/Nextcloud"

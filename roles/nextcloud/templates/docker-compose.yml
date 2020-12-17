@@ -1,0 +1,95 @@
+version: '3'
+
+services:
+  nextcloud:
+    image: linuxserver/nextcloud:latest
+    container_name: nextcloud
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - '{{ nextcloud_config_dir }}:/config'
+      - '{{ nextcloud_data_dir }}:/data'
+    ports:
+      - 9443:443
+    depends_on:
+      - mariadb
+      - traefik
+      - redis
+      - duckdns
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nextcloud.entrypoints=websecure
+      - traefik.http.routers.nextcloud.rule=Host("{{ duckdns_subdomain }}.duckdns.org")
+      - traefik.http.routers.nextcloud.tls=true
+      - traefik.http.routers.nextcloud.tls.certresolver=myhttpchallenge
+      - traefik.http.routers.nextcloud.service=nextcloud
+      - traefik.http.routers.nextcloud.middlewares=nextcloud-regex,nextcloud-headers
+      - traefik.http.services.nextcloud.loadbalancer.server.port=443
+      - traefik.http.services.nextcloud.loadbalancer.server.scheme=https
+      - traefik.http.middlewares.nextcloud-regex.redirectregex.regex=https://(.*)/.well-known/(card|cal)dav
+      - traefik.http.middlewares.nextcloud-regex.redirectregex.replacement=https://$$1/remote.php/dav/
+      - traefik.http.middlewares.nextcloud-regex.redirectregex.permanent=true
+      - traefik.http.middlewares.nextcloud-headers.headers.customFrameOptionsValue=SAMEORIGIN
+      - traefik.http.middlewares.nextcloud-headers.headers.stsSeconds=15552000
+
+  mariadb:
+    image: linuxserver/mariadb:latest
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD={{ mysql_root_password }}
+      - TZ=Europe/Berlin
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD={{ mysql_password }}
+    volumes:
+      - '{{ mariadb_config_dir }}:/config'
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myhttpchallenge.acme.httpchallenge=true
+      - --certificatesresolvers.myhttpchallenge.acme.httpchallenge.entrypoint=web
+      # - --certificatesresolvers.myhttpchallenge.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory   #Lets encrypt staging server for testing purpose
+      - --certificatesresolvers.myhttpchallenge.acme.email={{ traefik_challenge_email }}
+      - --certificatesresolvers.myhttpchallenge.acme.storage=/acme.json
+      - --serverstransport.insecureskipverify
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - '{{ traefik_config_dir }}/acme.json:/acme.json'
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+
+  duckdns:
+    image: linuxserver/duckdns:latest
+    container_name: duckdns
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - SUBDOMAINS={{ duckdns_subdomain }}
+      - TOKEN={{ duckdns_token }}
+      - LOG_FILE=false
+    restart: unless-stopped

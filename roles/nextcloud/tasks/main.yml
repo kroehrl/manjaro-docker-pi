@@ -1,0 +1,141 @@
+---
+- name: Create {{ nextcloud_compose_dir }} if it does not exist
+  file:
+    path: "{{ nextcloud_compose_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create {{ nextcloud_config_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ nextcloud_config_dir }}"
+    state: directory
+
+- name: Create {{ nextcloud_data_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ nextcloud_data_dir }}"
+    state: directory
+
+- name: Create {{ mariadb_config_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ mariadb_config_dir }}"
+    state: directory
+
+- name: Create {{ traefik_config_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ traefik_config_dir }}"
+    state: directory
+
+- name: Create {{ traefik_config_dir }}/acme.json
+  become: yes
+  become_user: root
+  file:
+    path: "{{ traefik_config_dir }}/acme.json"
+    state: touch
+    mode: '600'
+
+- name: install autofs
+  become: yes
+  become_user: root
+  pacman:
+    name: autofs
+    state: present
+
+- name: install cifs-utils
+  become: yes
+  become_user: root
+  pacman:
+    name: cifs-utils
+    state: present
+
+- name: create {{ nextcloud_backup_dir }} if it does not exist
+  become: yes
+  become_user: root
+  file:
+    path: "{{ nextcloud_backup_dir }}"
+    state: directory
+
+- name: create auto.backup
+  become: yes
+  become_user: root
+  copy:
+    dest: "/etc/autofs/auto.backup"
+    content: |
+      nextcloud -fstype=cifs,username={{ backup_remote_location_user }},password={{ backup_remote_location_user_password }},file_mode=0644,dir_mode=0755 :{{ backup_remote_location }}
+
+- name: add auto.backup to auto.master
+  become: yes
+  become_user: root
+  lineinfile:
+    line: "{{ nextcloud_backup_dir }} /etc/autofs/auto.backup --timeout 60 --browse"
+    dest: "/etc/autofs/auto.master"
+
+- name: enable autofs
+  become: yes
+  become_user: root
+  service:
+    name: autofs
+    enabled: yes
+    state: started
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ nextcloud_compose_dir }}/docker-compose.yml"
+
+- name: copy NextcloudBackup.sh
+  become: yes
+  become_user: root
+  template:
+    src: NextcloudBackup.sh
+    dest: "{{ nextcloud_compose_dir }}/NextcloudBackup.sh"
+    owner: root
+    group: root
+    mode: u=rwx,g-rwx,o-rwx
+
+- name: Add cronjob for Nextcloud Backup
+  become: yes
+  become_user: root
+  cron:
+    name: "Execute Nextcloud-Backup daily at 2:00AM"
+    minute: "0"
+    hour: "2"
+    job: "{{ nextcloud_compose_dir }}/NextcloudBackup.sh &> {{ nextcloud_compose_dir }}/backup_output.txt"
+
+- name: copy NextcloudRestore.sh
+  become: yes
+  become_user: root
+  template:
+    src: NextcloudRestore.sh
+    dest: "{{ nextcloud_compose_dir }}/NextcloudRestore.sh"
+    owner: root
+    group: root
+    mode: u=rwx,g-rwx,o-rwx
+
+- name: start nextcloud
+  shell: docker-compose up --build -d
+  args:
+    chdir: "{{ nextcloud_compose_dir }}"
+
+- name: Wait for Nextcloud Configuration
+  pause:
+    prompt: "Go to https://{{ ansible_host }}:9443 and do the configuration (Set the database to mariadb instead of localhost). When done, continue this execution."
+
+- name: Configure nextcloud
+  command: "{{ item }}"
+  with_items:
+  - docker exec --user {{ nextcloud_webserver_user }} nextcloud php /config/www/nextcloud/occ config:system:set trusted_domains 1 --value={{ duckdns_subdomain }}.duckdns.org
+  - docker exec --user {{ nextcloud_webserver_user }} nextcloud php /config/www/nextcloud/occ config:system:set trusted_proxies 0 --value={{ ansible_host }}
+  - docker exec --user {{ nextcloud_webserver_user }} nextcloud php /config/www/nextcloud/occ config:system:set redis host --value=redis
+  - docker exec --user {{ nextcloud_webserver_user }} nextcloud php /config/www/nextcloud/occ config:system:set redis port --value=6379
+  - docker exec --user {{ nextcloud_webserver_user }} nextcloud php /config/www/nextcloud/occ config:system:set memcache.locking --value='\OC\Memcache\Redis'
+  - docker exec --user {{ nextcloud_webserver_user }} nextcloud php /config/www/nextcloud/occ config:system:set memcache.local --value='\OC\Memcache\Redis'
+  - docker exec --user {{ nextcloud_webserver_user }} nextcloud php /config/www/nextcloud/occ db:add-missing-indices
+  - docker exec --user {{ nextcloud_webserver_user }} nextcloud php /config/www/nextcloud/occ db:convert-filecache-bigint
