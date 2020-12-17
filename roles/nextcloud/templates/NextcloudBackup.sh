@@ -22,7 +22,7 @@ backupMainDir=$1
 
 if [ -z "$backupMainDir" ]; then
 	# TODO: The directory where you store the Nextcloud backups (when not specified by args)
-    backupMainDir='{{ nextcloud_backup_dir }}/Nextcloud'
+    backupMainDir='{{ nextcloud_backup_dir }}/nextcloud'
 fi
 
 currentDate=$(date +"%Y%m%d_%H%M%S")
