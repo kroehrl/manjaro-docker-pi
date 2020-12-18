@@ -17,6 +17,12 @@
 # All entries which need to be customized are tagged with "TODO".
 #
 
+#
+# Get starttime
+#
+start=`date +%s`
+echo "Start: $(date -d @${start})"
+
 # Variables
 restore=$1
 backupMainDir=$2
@@ -194,3 +200,15 @@ echo
 echo
 echo "DONE!"
 echo "Backup ${restore} successfully restored."
+
+#
+# Get endtime and runtime
+#
+end=`date +%s`
+echo "End: $(date -d @${end})"
+
+runtime=$((end-start))
+hours=$((runtime / 3600))
+minutes=$(( (runtime % 3600) / 60 ))
+seconds=$(( (runtime % 3600) % 60 )) 
+printf "Runtime: %02i:%02i:%02i (hh:mm:ss)" $hours $minutes $seconds
